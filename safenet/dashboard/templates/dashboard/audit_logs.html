@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Audit Logs</h2>
+<form method="get" class="row g-2 mb-3">
+  <div class="col-md-3">{{ form.action }}</div>
+  <div class="col-md-3">{{ form.start_date }}</div>
+  <div class="col-md-3">{{ form.end_date }}</div>
+  <div class="col-md-3"><button class="btn btn-primary w-100" type="submit">Filter</button></div>
+  {% csrf_token %}
+</form>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Time</th>
+      <th>User</th>
+      <th>Action</th>
+      <th>Content</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for log in logs %}
+      <tr>
+        <td>{{ log.timestamp }}</td>
+        <td>{{ log.user.username }}</td>
+        <td>{{ log.action }}</td>
+        <td>{{ log.content }}</td>
+        <td>{{ log.notes|default:"-" }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="5">No logs found.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
+
