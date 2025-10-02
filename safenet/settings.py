@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-8@db)_kmhew8%i1!4lhlxf2a)6f)zadmj6w#=6y#$aex6bd64^'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-8@db)_kmhew8%i1!4lhlxf2a)6f)zadmj6w#=6y#$aex6bd64^')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'safe-net.onrender.com').split(',')
 
 
 # Application definition
@@ -82,6 +83,11 @@ DATABASES = {
     }
 }
 
+# Use PostgreSQL on Render if DATABASE_URL is provided
+if 'DATABASE_URL' in os.environ:
+    import dj_database_url
+    DATABASES['default'] = dj_database_url.parse(os.environ['DATABASE_URL'])
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -118,6 +124,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.environ.get('STATIC_ROOT', BASE_DIR / 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -127,8 +134,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Custom user model
 AUTH_USER_MODEL = 'users.User'
 
-# Gemini API key placeholder (set via env in production)
-GEMINI_API_KEY = 'AIzaSyAAs9zRTxqGqve3Gody-5jlySYmr-tX0l0'
+# Gemini API key (set via env in production)
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', 'AIzaSyAAs9zRTxqGqve3Gody-5jlySYmr-tX0l0')
 
 # Auth redirects
 LOGIN_URL = '/users/login/'
