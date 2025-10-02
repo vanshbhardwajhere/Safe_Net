@@ -24,10 +24,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-8@db)_kmhew8%i1!4lhlxf2a)6f)zadmj6w#=6y#$aex6bd64^')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() == 'true'
+DEBUG = False
 
+# Hosts
 raw_allowed_hosts = os.environ.get('DJANGO_ALLOWED_HOSTS', 'safe-net.onrender.com')
 ALLOWED_HOSTS = [h.strip() for h in raw_allowed_hosts.split(',') if h.strip()]
+
+# CSRF Trusted Origins (must include https:// prefix)
+raw_csrf_origins = os.environ.get(
+    'DJANGO_CSRF_TRUSTED_ORIGINS',
+    'https://safe-net.onrender.com'
+)
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in raw_csrf_origins.split(',') if o.strip()]
 
 
 # Application definition
