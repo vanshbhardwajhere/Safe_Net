@@ -26,7 +26,8 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-8@db)_kmhew8%i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'safe-net.onrender.com').split(',')
+raw_allowed_hosts = os.environ.get('DJANGO_ALLOWED_HOSTS', 'safe-net.onrender.com')
+ALLOWED_HOSTS = [h.strip() for h in raw_allowed_hosts.split(',') if h.strip()]
 
 
 # Application definition
@@ -83,8 +84,8 @@ DATABASES = {
     }
 }
 
-# Use PostgreSQL on Render if DATABASE_URL is provided
-if 'DATABASE_URL' in os.environ:
+# Use PostgreSQL on Render if DATABASE_URL is provided and not empty
+if 'DATABASE_URL' in os.environ and os.environ['DATABASE_URL'].strip():
     import dj_database_url
     DATABASES['default'] = dj_database_url.parse(os.environ['DATABASE_URL'])
 

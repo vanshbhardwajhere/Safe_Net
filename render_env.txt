@@ -1,10 +1,10 @@
-# Django settings
+# Django settings for Render deployment
 DJANGO_SECRET_KEY=f0iv9%&76(4=siht@23rrf^)t!&_&+bwd^z^sr_klr)%$6r30i
 DJANGO_DEBUG=False
 DJANGO_ALLOWED_HOSTS=safe-net.onrender.com
 
-# Database (Render provides this automatically if you add a database)
-DATABASE_URL=postgresql://safenet_db_user:17PhpxjY0gZbd7ni2pGLhk3X74dBI6Qy@dpg-d3f2duvfte5s73bi06ag-a/safenet_db
+# Database - Leave empty for SQLite, or add PostgreSQL URL from Render
+# DATABASE_URL=postgresql://username:password@hostname:port/database_name
 
 # Static files
 STATIC_ROOT=staticfiles
@@ -16,16 +16,12 @@ DJANGO_LANGUAGE_CODE=en-us
 # Gemini API for content moderation
 GEMINI_API_KEY=AIzaSyAAs9zRTxqGqve3Gody-5jlySYmr-tX0l0
 
-# Email settings (optional - uncomment and configure if needed)
+# Email settings (optional)
 # EMAIL_HOST=smtp.gmail.com
 # EMAIL_PORT=587
 # EMAIL_HOST_USER=vanshbhardwajhere@gmail.com
 # EMAIL_HOST_PASSWORD=12345678
 # EMAIL_USE_TLS=True
-
-# Additional Django settings
-DJANGO_STATIC_URL=/static/
-DJANGO_MEDIA_URL=/media/
 
 # Render specific settings
 PORT=8000
