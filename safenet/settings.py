@@ -11,6 +11,8 @@ SECRET_KEY = os.environ.get(
 )
 
 # Debug
+# Set DEBUG to True if the DJANGO_DEBUG environment variable is 'true' (case-insensitive)
+# The default is False for safety in production.
 DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() == "true"
 
 # Hosts
@@ -38,9 +40,14 @@ INSTALLED_APPS = [
     'users',
     'moderation',
     'dashboard',
+    'django_extensions'
 ]
 
 MIDDLEWARE = [
+    # Gzip WhiteNoise middleware should be placed right after SecurityMiddleware in production.
+    # If using Whitenoise, uncomment this line:
+    # 'whitenoise.middleware.WhiteNoiseMiddleware',
+    
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -99,7 +106,9 @@ USE_TZ = True
 
 # Static files
 STATIC_URL = '/static/'
-STATIC_ROOT = os.environ.get('STATIC_ROOT', BASE_DIR / 'staticfiles')
+# This path is where 'collectstatic' will place all static files in production.
+STATIC_ROOT = BASE_DIR / 'staticfiles' 
+# Removed os.environ.get('STATIC_ROOT', ...) for simplicity and consistency.
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -115,11 +124,26 @@ LOGIN_URL = '/users/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/users/login/'
 
-# ======= 🔒 SECURITY SETTINGS for Render HTTPS =======
+# ======= 🔒 PRODUCTION/SECURITY SETTINGS for Render HTTPS =======
+# These settings will ONLY be active when DEBUG=False (i.e., on Render)
+
+# Trust the Render proxy headers for SSL
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Cookies will only be sent over HTTPS
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = not DEBUG
+
+# Force redirect to HTTPS only when DEBUG is False (i.e., in production)
+SECURE_SSL_REDIRECT = not DEBUG 
+
+# Add HSTS headers for extra security
+# HSTS is a browser-level policy telling it to only connect via HTTPS
+# Set a max age to 1 year (31536000 seconds)
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
 
 # Optional: prevent mixed content issues on HTTPS
 SECURE_BROWSER_XSS_FILTER = True
