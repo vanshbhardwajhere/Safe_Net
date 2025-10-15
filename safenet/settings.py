@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -19,7 +20,7 @@ raw_allowed_hosts = os.environ.get(
 )
 ALLOWED_HOSTS = [h.strip() for h in raw_allowed_hosts.split(',') if h.strip()]
 
-# CSRF Trusted Origins (must include https:// for Render, http:// for local)
+# CSRF Trusted Origins (must include https:// for Render)
 raw_csrf_origins = os.environ.get(
     'DJANGO_CSRF_TRUSTED_ORIGINS',
     'http://127.0.0.1:8000,http://localhost:8000,https://safe-net.onrender.com'
@@ -68,7 +69,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'safenet.wsgi.application'
 
-# Database
+# Database (SQLite for local, Postgres for Render)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -76,8 +77,11 @@ DATABASES = {
     }
 }
 if 'DATABASE_URL' in os.environ and os.environ['DATABASE_URL'].strip():
-    import dj_database_url
-    DATABASES['default'] = dj_database_url.parse(os.environ['DATABASE_URL'])
+    DATABASES['default'] = dj_database_url.parse(
+        os.environ['DATABASE_URL'],
+        conn_max_age=600,
+        ssl_require=True,
+    )
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -110,3 +114,13 @@ GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 LOGIN_URL = '/users/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/users/login/'
+
+# ======= 🔒 SECURITY SETTINGS for Render HTTPS =======
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = not DEBUG
+
+# Optional: prevent mixed content issues on HTTPS
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
